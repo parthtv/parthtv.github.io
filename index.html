@@ -335,9 +335,14 @@
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ── CAROUSEL ────────────────────────────────────────────────────────────────
-// Reads image filenames from carousel/index.json
-// Format: { "images": ["image1.jpg", "image2.jpg", ...], "captions": ["...", "..."] }
-// To add photos: upload images to the carousel/ folder on GitHub, then update index.json
+// To add/remove photos, edit the CAROUSEL_IMAGES array below.
+// Just add the filename (the file must be in the carousel/ folder on GitHub).
+// Captions are optional — use "" for no caption.
+
+const CAROUSEL_IMAGES = [
+  // { src: "carousel/image1.jpg", caption: "" },
+  // { src: "carousel/image2.jpg", caption: "Florence, 2024" },
+];
 
 const track   = document.getElementById('carouselTrack');
 const dots    = document.getElementById('carouselDots');
@@ -347,28 +352,28 @@ let current = 0;
 let slides  = [];
 let timer;
 
-function buildCarousel(images, captions) {
+function buildCarousel(items) {
   track.innerHTML = '';
   dots.innerHTML  = '';
-  slides = images;
+  slides = items;
 
-  if (images.length === 0) {
-    track.innerHTML = '<div class="carousel-slide placeholder">Add a carousel/index.json file to show photos here.</div>';
+  if (items.length === 0) {
+    track.innerHTML = '<div class="carousel-slide placeholder">Add image filenames to the CAROUSEL_IMAGES list in index.html to show photos here.</div>';
     return;
   }
 
-  images.forEach((src, i) => {
+  items.forEach((item, i) => {
     const slide = document.createElement('div');
     slide.className = 'carousel-slide';
     const img = document.createElement('img');
-    img.src = src;
-    img.alt = captions[i] || '';
+    img.src = item.src;
+    img.alt = item.caption || '';
     img.loading = 'lazy';
     slide.appendChild(img);
-    if (captions[i]) {
+    if (item.caption) {
       const cap = document.createElement('div');
       cap.className = 'slide-caption';
-      cap.textContent = captions[i];
+      cap.textContent = item.caption;
       slide.appendChild(cap);
     }
     track.appendChild(slide);
@@ -376,6 +381,30 @@ function buildCarousel(images, captions) {
     const dot = document.createElement('button');
     dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
     dot.addEventListener('click', () => { goTo(i); startTimer(); });
+    dots.appendChild(dot);
+  });
+
+  goTo(0);
+  startTimer();
+}
+
+function goTo(n) {
+  current = (n + slides.length) % slides.length;
+  track.style.transform = `translateX(-${current * 100}%)`;
+  document.querySelectorAll('.carousel-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === current);
+  });
+}
+
+function startTimer() {
+  clearInterval(timer);
+  timer = setInterval(() => goTo(current + 1), 5000);
+}
+
+prevBtn.addEventListener('click', () => { goTo(current - 1); startTimer(); });
+nextBtn.addEventListener('click', () => { goTo(current + 1); startTimer(); });
+
+buildCarousel(CAROUSEL_IMAGES);
     dots.appendChild(dot);
   });
 
