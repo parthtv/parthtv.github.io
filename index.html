@@ -29,30 +29,6 @@
     line-height: 1.7;
   }
 
-  /* ── HEADER ── */
-  header {
-    background: var(--navy);
-    padding: 0 48px;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.25);
-  }
-
-  .site-name {
-    font-family: 'Playfair Display', serif;
-    color: var(--white);
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    text-decoration: none;
-  }
-
-
 
   /* ── HERO ── */
   .hero {
@@ -309,9 +285,6 @@
 <body>
 
 <!-- HEADER -->
-<header>
-  <a href="#" class="site-name">Parth Vaishnav</a>
-</header>
 
 <!-- HERO -->
 <section class="hero">
@@ -334,7 +307,7 @@
     <div class="hero-links">
       <a class="btn btn-primary" href="https://parthtv.github.io/cv" target="_blank">View CV</a>
       <a class="btn btn-secondary" href="blog.html">Blog</a>
-      <a class="btn btn-secondary" href="mailto:parthtv&#64;umich&#46;edu">Contact</a>
+      <span style="display:inline-block;padding:10px 24px;border-radius:4px;font-size:14px;font-weight:600;border:2px solid var(--navy);color:var(--navy);">parthtvATumich.edu</span>
     </div>
   </div>
 </section>
@@ -360,14 +333,14 @@
   <a href="https://parthtv.github.io/cv" target="_blank">CV</a></p>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ── CAROUSEL ────────────────────────────────────────────────────────────────
 // Reads image filenames from carousel/index.json
 // Format: { "images": ["image1.jpg", "image2.jpg", ...], "captions": ["...", "..."] }
-// If index.json doesn't exist, falls back to trying carousel/image1.jpg through image20.jpg
+// To add photos: upload images to the carousel/ folder on GitHub, then update index.json
 
-const track  = document.getElementById('carouselTrack');
-const dots   = document.getElementById('carouselDots');
+const track   = document.getElementById('carouselTrack');
+const dots    = document.getElementById('carouselDots');
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
 let current = 0;
@@ -380,7 +353,7 @@ function buildCarousel(images, captions) {
   slides = images;
 
   if (images.length === 0) {
-    track.innerHTML = '<div class="carousel-slide placeholder">No images found in carousel/ folder yet.</div>';
+    track.innerHTML = '<div class="carousel-slide placeholder">Add a carousel/index.json file to show photos here.</div>';
     return;
   }
 
@@ -402,8 +375,40 @@ function buildCarousel(images, captions) {
 
     const dot = document.createElement('button');
     dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-    dot.addEventListener('click', () => goTo(i));
+    dot.addEventListener('click', () => { goTo(i); startTimer(); });
     dots.appendChild(dot);
+  });
+
+  goTo(0);
+  startTimer();
+}
+
+function goTo(n) {
+  current = (n + slides.length) % slides.length;
+  track.style.transform = `translateX(-${current * 100}%)`;
+  document.querySelectorAll('.carousel-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === current);
+  });
+}
+
+function startTimer() {
+  clearInterval(timer);
+  timer = setInterval(() => goTo(current + 1), 5000);
+}
+
+prevBtn.addEventListener('click', () => { goTo(current - 1); startTimer(); });
+nextBtn.addEventListener('click', () => { goTo(current + 1); startTimer(); });
+
+// Load from carousel/index.json — you must create this file on GitHub
+fetch('carousel/index.json')
+  .then(r => { if (!r.ok) throw new Error('no index.json'); return r.json(); })
+  .then(data => {
+    const images   = (data.images   || []).map(f => 'carousel/' + f);
+    const captions = data.captions  || images.map(() => '');
+    buildCarousel(images, captions);
+  })
+  .catch(() => {
+    track.innerHTML = '<div class="carousel-slide placeholder">Add photos by creating a <code>carousel/index.json</code> file — see instructions.</div>';
   });
 
   goTo(0);
@@ -436,8 +441,4 @@ fetch('carousel/index.json')
   .catch(() => {
     // Fallback: probe for image1.jpg through image20.jpg
     const probes = Array.from({length: 20}, (_, i) => `carousel/image${i+1}.jpg`);
-    Promise.allSettled(probes.map(src =>
-      fetch(src, {method: 'HEAD'}).then(r => r.ok ? src : Promise.reject())
-    )).then(results => {
-      const found = results
-        .filter(
+    Promise.allSettled(probes.
