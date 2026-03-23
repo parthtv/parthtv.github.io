@@ -333,15 +333,15 @@
   <a href="https://parthtv.github.io/cv" target="_blank">CV</a></p>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // ── CAROUSEL ────────────────────────────────────────────────────────────────
 // To add/remove photos, edit the CAROUSEL_IMAGES array below.
 // Just add the filename (the file must be in the carousel/ folder on GitHub).
 // Captions are optional — use "" for no caption.
 
 const CAROUSEL_IMAGES = [
-  { src: "carousel/image1.jpg", caption: "Leaning Tower" },
-  //{ src: "carousel/image2.jpg", caption: "Florence, 2024" },
+  { src: "carousel/image1.jpg", caption: "" },
+  // { src: "carousel/image2.jpg", caption: "" },
 ];
 
 const track   = document.getElementById('carouselTrack');
@@ -405,69 +405,6 @@ prevBtn.addEventListener('click', () => { goTo(current - 1); startTimer(); });
 nextBtn.addEventListener('click', () => { goTo(current + 1); startTimer(); });
 
 buildCarousel(CAROUSEL_IMAGES);
-    dots.appendChild(dot);
-  });
 
-  goTo(0);
-  startTimer();
-}
-
-function goTo(n) {
-  current = (n + slides.length) % slides.length;
-  track.style.transform = `translateX(-${current * 100}%)`;
-  document.querySelectorAll('.carousel-dot').forEach((d, i) => {
-    d.classList.toggle('active', i === current);
-  });
-}
-
-function startTimer() {
-  clearInterval(timer);
-  timer = setInterval(() => goTo(current + 1), 5000);
-}
-
-prevBtn.addEventListener('click', () => { goTo(current - 1); startTimer(); });
-nextBtn.addEventListener('click', () => { goTo(current + 1); startTimer(); });
-
-// Load from carousel/index.json — you must create this file on GitHub
-fetch('carousel/index.json')
-  .then(r => { if (!r.ok) throw new Error('no index.json'); return r.json(); })
-  .then(data => {
-    const images   = (data.images   || []).map(f => 'carousel/' + f);
-    const captions = data.captions  || images.map(() => '');
-    buildCarousel(images, captions);
-  })
-  .catch(() => {
-    track.innerHTML = '<div class="carousel-slide placeholder">Add photos by creating a <code>carousel/index.json</code> file — see instructions.</div>';
-  });
-
-  goTo(0);
-  startTimer();
-}
-
-function goTo(n) {
-  current = (n + slides.length) % slides.length;
-  track.style.transform = `translateX(-${current * 100}%)`;
-  document.querySelectorAll('.carousel-dot').forEach((d, i) => {
-    d.classList.toggle('active', i === current);
-  });
-}
-
-function startTimer() {
-  clearInterval(timer);
-  timer = setInterval(() => goTo(current + 1), 5000);
-}
-
-prevBtn.addEventListener('click', () => { goTo(current - 1); startTimer(); });
-nextBtn.addEventListener('click', () => { goTo(current + 1); startTimer(); });
-
-// Try loading from carousel/index.json first
-fetch('carousel/index.json')
-  .then(r => r.json())
-  .then(data => buildCarousel(
-    data.images.map(f => 'carousel/' + f),
-    data.captions || data.images.map(() => '')
-  ))
-  .catch(() => {
-    // Fallback: probe for image1.jpg through image20.jpg
-    const probes = Array.from({length: 20}, (_, i) => `carousel/image${i+1}.jpg`);
-    Promise.allSettled(probes.
+</body>
+</html>
