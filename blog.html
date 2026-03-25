@@ -742,7 +742,7 @@ let isAuthed = false;
 // Default password is: BlogAdmin2025!
 // To change it, replace this hash with: await crypto.subtle.digest('SHA-256', new TextEncoder().encode('yourpassword'))
 // then convert the ArrayBuffer to hex.
-const PASSWORD_HASH = 'd5a6d6b4d3c57e5f972ecb1505b6bd813c5a65eb39246d54d67766fc9e7e8c1a';
+const PASSWORD_HASH = 'ebde91ce8285c7e3ff9478dddbe493f26c8c5ec9d5be697ffff7790fe940a4fc';
 
 async function hashPassword(pw) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
